@@ -1,7 +1,7 @@
 
-import {  Link } from 'react-router-dom';
-import { Button } from './components/ui/button.tsx';
-import './App.css';
+import {   useLocation } from 'react-router-dom';
+
+
 import AppRoutes from './router/routes.tsx';
 import Navbar from './components/navbar.tsx';
 
@@ -10,10 +10,16 @@ import Navbar from './components/navbar.tsx';
 
 
 function App() {
+
+  const location = useLocation();
+
+  // Check if we are on the home page
+  const isHomePage = location.pathname === "/";
+
   return (
     <div>
      
-    <Navbar/>
+     {isHomePage && <Navbar />}
       <AppRoutes/>
       
     </div>

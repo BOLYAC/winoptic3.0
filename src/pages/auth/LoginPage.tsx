@@ -1,14 +1,10 @@
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import {Card,CardContent,CardDescription,CardFooter,CardHeader,CardTitle,} from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {
@@ -21,7 +17,9 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { z } from "zod"
-
+import { Loader2 } from "lucide-react"
+import { RootState, AppDispatch } from "./../../redux/store"
+import { login, logout } from "./../../redux/slices/authSlice"
 
 // Define form validation schema with Zod
 const formSchema = z.object({
@@ -32,13 +30,15 @@ const formSchema = z.object({
   }),
   password: z
   .string()
-  .min(6, {
-    message: "Password must be at least 6 characters long.",
+  .min(8, {
+    message: "Password must be at least 8 characters long.",
   }),
 });
 
 const LoginPage: React.FC = () => {
-  //  Define  form with React Hook Form and Zod resolver
+  const dispatch = useDispatch<AppDispatch>()
+  const { isAuthenticated, user, loading, error } = useSelector((state: RootState) => state.auth)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,67 +47,128 @@ const LoginPage: React.FC = () => {
     },
   });
 
-  //  Define a submit handler
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // This will be type-safe and validated
-    console.log(values);
+  useEffect(() => {
+    const token = localStorage.getItem("authToken")
+    if (token) {
+      // In a real application, you would validate the token here
+      dispatch(login({ email: "user@example.com", password: "password" }))
+    }
+  }, [dispatch])
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    dispatch(login(values))
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    form.reset()
+  }
+
+  if (isAuthenticated && user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Welcome</CardTitle>
+            <CardDescription>You are logged in</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center mb-4">Email: {user.email}</p>
+            <Button onClick={handleLogout} className="w-full rounded-full">
+              Logout
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen  ">
-      <div className="relative sm:max-w-xl ">
-    <Card className="w-[450px] ">
-      <CardHeader className="text-center">
-        <CardTitle >Login to your account</CardTitle>
-        <CardDescription>Good to see you again</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Email field */}
-            <FormField
-              control={form.control}
-              name="email" 
-              render={({ field }) => (
-                <FormItem >
-                  <FormLabel> Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="email@gmail.com" {...field} />
-                  </FormControl>
-                   <FormMessage />
-                </FormItem>
-              )}
-            />
-             {/* password field */}
-             <FormField
-              control={form.control}
-              name="password"  
-              render={({ field }) => (
-                <FormItem className="text-left">
-                  <FormLabel> Passsword</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Enter your password" {...field} />
-                  </FormControl>
-                  <FormDescription>Forgot password ? <a href="/password"  className="hover:underline ">Reset </a></FormDescription>
-                 <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" variant="ghost" className="text-white mx-auto block px-10 ">Login</Button>
-            
-            <p className="mt-4 text-sm text-center">
-            Don't have an account? <a href="/register" className="text-blue-500">Register</a>
-            </p>
-          
-        
-          </form>
-          
-        </Form>
-      </CardContent>
+    <div className="flex justify-center items-center min-h-screen">
       
-    </Card>
-    </div>
-    </div>
+        <Card className="w-full max-w-4xl">
+        <div className="flex flex-col md:flex-row ">
+        <div className="md:w-1/2">
+        <img 
+        src = "./../../../public/unsplash.jpg?width=400&height=600"
+        alt="login Picture"
+        className="w-full h-full object-cover rounded-l-lg"
+        />
+        </div>
+        <div className="md:w-1/2 p-6 flex flex-col justify-center">
+        <Card className="shadow-none border-0">
+          <CardHeader className="text-center ">
+            <CardTitle >Login to your account</CardTitle>
+            <CardDescription>Good to see you again</CardDescription>
+          </CardHeader>
+          <CardContent>
+          {error && (
+                  <Alert variant="destructive" className="mb-5">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email" 
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input  placeholder="user@example.com" {...field} type="email"/>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"  
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="Enter your password" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        <a href="/password" className="text-sm text-gray-500 hover:underline ml-2">
+                          Forgot password ?
+                        </a>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+          
+                
+                <Button type="submit" className="w-full rounded-full text-base "  disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                      Logging in...
+                    </>
+                  ) : "Log in"}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter>
+            <p className="text-sm text-center w-full ">
+              Don't have an account? {" "}
+              <a href="/register" className="text-blue-600 hover:underline">
+                Sign up
+              </a>
+            </p>
+          </CardFooter>
+          </Card>
+          </div>
+          </div>
+        </Card>
+      </div>
+    
   );
 };
 
