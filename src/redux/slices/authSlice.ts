@@ -11,6 +11,7 @@ type AuthState = {
   isAuthenticated: boolean
   loading: boolean
   error: string | null
+  resetTokens: { [email: string]: string }
 }
 
 
@@ -31,6 +32,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  resetTokens: {}
 }
 
 // Simulated API call for login
@@ -50,23 +52,7 @@ const registerApi = async (credentials: RegisterCredentials): Promise<User> => {
   return { id: '2', name: credentials.name, email: credentials.email }
 }
 
-// Simulated API call for password reset
-const resetPasswordApi = async (email: string): Promise<void> => {
-  
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  console.log(`Password reset requested for ${email}`)
-}
 
-export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
-  async (email: string, { rejectWithValue }) => {
-    try {
-      await resetPasswordApi(email)
-    } catch (error) {
-      return rejectWithValue((error as Error).message)
-    }
-  }
-)
 
 export const register = createAsyncThunk(
   'auth/register',
@@ -88,6 +74,49 @@ export const login = createAsyncThunk(
       const user = await loginApi(credentials)
       localStorage.setItem('authToken', 'dummy-token') 
       return user
+    } catch (error) {
+      return rejectWithValue((error as Error).message)
+    }
+  }
+)
+
+// Simulated API call for password reset request
+const requestResetApi = async (email: string): Promise<string> => {
+  await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
+  const token = Math.random().toString(36).substr(2, 10)
+  console.log(`Reset token for ${email}: ${token}`)
+  return token
+}
+
+// Simulated API call for password reset
+const resetPasswordApi = async (token: string, newPassword: string): Promise<void> => {
+  await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
+  console.log(`Password reset with token ${token} to new password: ${newPassword}`)
+}
+
+export const requestReset = createAsyncThunk(
+  'auth/requestReset',
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const token = await requestResetApi(email)
+      return { email, token }
+    } catch (error) {
+      return rejectWithValue((error as Error).message)
+    }
+  }
+)
+
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async ({ token, newPassword }: { token: string; newPassword: string }, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as { auth: AuthState }
+      const email = Object.keys(state.auth.resetTokens).find(key => state.auth.resetTokens[key] === token)
+      if (!email) {
+        throw new Error('Invalid or expired token')
+      }
+      await resetPasswordApi(token, newPassword)
+      return email
     } catch (error) {
       return rejectWithValue((error as Error).message)
     }

@@ -75,6 +75,7 @@ const Register : React.FC = () => {
     try {
       await dispatch(register(values)).unwrap()
       setRegistrationSuccess(true)
+      
     } catch (err) {
       console.error("Registration failed:", err)
     }
