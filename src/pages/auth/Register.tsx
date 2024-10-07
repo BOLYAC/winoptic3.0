@@ -83,11 +83,11 @@ const Register : React.FC = () => {
 
   if (registrationSuccess) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Registration Successful</CardTitle>
-            <CardDescription>Your account has been created</CardDescription>
+            <CardTitle className="tetx-2xl sm:text-3xl">Registration Successful</CardTitle>
+            <CardDescription className="text-sm sm:text-base">Your account has been created</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-center mb-4">You can now log in with your new account</p>
@@ -101,10 +101,10 @@ const Register : React.FC = () => {
   }
 
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <Card className="w-full max-w-4xl">
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/2">
+          <div className="hidden md:block md:w-1/2">
             <img 
               src="./../../../public/unsplash.jpg?width=400&height=600"
               alt="register"
@@ -114,8 +114,8 @@ const Register : React.FC = () => {
           <div className="md:w-1/2 p-6 flex flex-col justify-center">
             <Card className="shadow-none border-0">
       <CardHeader className="text-center">
-        <CardTitle >Create an account</CardTitle>
-        <CardDescription>Sign up to get started</CardDescription>
+        <CardTitle className="tetx-2xl sm:text-3xl">Create an account</CardTitle>
+        <CardDescription className="text-sm sm:text-base">Sign up to get started</CardDescription>
         
       </CardHeader>
       <CardContent>
@@ -134,9 +134,9 @@ const Register : React.FC = () => {
               name="name" 
               render={({ field }) => (
                 <FormItem >
-                  <FormLabel> User name</FormLabel>
+                  <FormLabel className="text-sm "> User name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your name" {...field} />
+                    <Input placeholder="Enter your name" {...field} className="text-sm sm:text-base p-2 sm:p-3" />
                   </FormControl>
                    <FormMessage />
                 </FormItem>
@@ -148,9 +148,9 @@ const Register : React.FC = () => {
               name="email" 
               render={({ field }) => (
                 <FormItem >
-                  <FormLabel> Email</FormLabel>
+                  <FormLabel className="text-sm "> Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="user@example.com" {...field} />
+                    <Input type="email" placeholder="user@example.com" {...field} className="text-sm sm:text-base p-2 sm:p-3"/>
                   </FormControl>
                    <FormMessage />
                 </FormItem>
@@ -162,9 +162,9 @@ const Register : React.FC = () => {
               name="password"  
               render={({ field }) => (
                 <FormItem >
-                  <FormLabel> Password</FormLabel>
+                  <FormLabel className="text-sm "> Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Enter your password" {...field} />
+                    <Input type="password" placeholder="Enter your password" {...field} className="text-sm sm:text-base p-2 sm:p-3"/>
                   </FormControl>
                  <FormMessage />
                 </FormItem>
@@ -176,15 +176,15 @@ const Register : React.FC = () => {
               name="confirmPassword"  
               render={({ field }) => (
                 <FormItem >
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel className="text-sm">Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Confirm your password" {...field} />
+                    <Input type="password" placeholder="Confirm your password" {...field} className="text-sm sm:text-base p-2 sm:p-3"/>
                   </FormControl>
                  <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full rounded-full text-base" disabled={loading}>
+            <Button type="submit" className="w-full rounded-full text-sm sm:text-base py-2 sm:py-3 mb-4" disabled={loading}>
                       {loading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
@@ -196,9 +196,11 @@ const Register : React.FC = () => {
           </form>
           
         </Form>
+        <p className="text-center text-sm text- text-gray-600">By clicking continue, you agree to our <a className="hover:underline">Terms of Service </a>and <a className="hover:underline">Privacy Policy</a>.</p>
+        
       </CardContent>
-      <CardFooter>
-          <p className=" text-sm text-center w-full">
+      <CardFooter  className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+          <p className=" text-md text-center w-full ">
             Already have an account? <a href="/login" className="text-blue-600 hover:underline">Log in</a>
           </p>
       </CardFooter>

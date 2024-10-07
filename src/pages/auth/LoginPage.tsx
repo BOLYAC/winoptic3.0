@@ -66,11 +66,11 @@ const LoginPage: React.FC = () => {
 
   if (isAuthenticated && user) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Welcome</CardTitle>
-            <CardDescription>You are logged in</CardDescription>
+            <CardTitle className="tetx-2xl sm:text-3xl">Welcome</CardTitle>
+            <CardDescription className="text-sm sm:text-base">You are logged in</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-center mb-4">Email: {user.email}</p>
@@ -84,11 +84,11 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       
         <Card className="w-full max-w-4xl">
         <div className="flex flex-col md:flex-row ">
-        <div className="md:w-1/2">
+        <div className="hidden md:block md:w-1/2">
         <img 
         src = "./../../../public/unsplash.jpg?width=400&height=600"
         alt="login Picture"
@@ -98,8 +98,8 @@ const LoginPage: React.FC = () => {
         <div className="md:w-1/2 p-6 flex flex-col justify-center">
         <Card className="shadow-none border-0">
           <CardHeader className="text-center ">
-            <CardTitle >Login to your account</CardTitle>
-            <CardDescription>Good to see you again</CardDescription>
+            <CardTitle className="tetx-2xl sm:text-3xl">Login to your account</CardTitle>
+            <CardDescription className="text-sm sm:text-base">Good to see you again</CardDescription>
           </CardHeader>
           <CardContent>
           {error && (
@@ -116,9 +116,9 @@ const LoginPage: React.FC = () => {
                   name="email" 
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="text-sm sm:text-base">Email</FormLabel>
                       <FormControl>
-                        <Input  placeholder="user@example.com" {...field} type="email"/>
+                        <Input  placeholder="user@example.com" className="text-sm sm:text-base p-2 sm:p-3" {...field} type="email"/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -129,12 +129,12 @@ const LoginPage: React.FC = () => {
                   name="password"  
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="text-sm sm:text-base">Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Enter your password" {...field} />
+                        <Input type="password" placeholder="Enter your password" className="text-sm sm:text-base p-2 sm:p-3" {...field} />
                       </FormControl>
                       <FormDescription>
-                        <a href="/password" className="text-sm text-gray-500 hover:underline ml-2">
+                        <a href="/password" className="text-sm sm:text-sm text-gray-500 hover:underline ml-2">
                           Forgot password ?
                         </a>
                       </FormDescription>
@@ -144,7 +144,7 @@ const LoginPage: React.FC = () => {
                 />
           
                 
-                <Button type="submit" className="w-full rounded-full text-base "  disabled={loading}>
+                <Button type="submit" className="w-full rounded-full text-sm sm:text-base py-2 sm:py-3 "  disabled={loading}>
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
@@ -155,8 +155,8 @@ const LoginPage: React.FC = () => {
               </form>
             </Form>
           </CardContent>
-          <CardFooter>
-            <p className="text-sm text-center w-full ">
+          <CardFooter className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+            <p className="text-md text-center w-full ">
               Don't have an account? {" "}
               <a href="/register" className="text-blue-600 hover:underline">
                 Sign up

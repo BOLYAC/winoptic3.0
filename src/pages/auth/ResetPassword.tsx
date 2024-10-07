@@ -77,7 +77,7 @@ const ResetPasswordPage: React.FC = () => {
 
   if (resetComplete) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Password Reset Complete</CardTitle>
@@ -94,7 +94,7 @@ const ResetPasswordPage: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>Reset Your Password</CardTitle>

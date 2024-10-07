@@ -6,15 +6,18 @@ interface User {
   email: string
 }
 
-type AuthState = {
-  user: User |null
+interface ResetToken {
+  token: string
+  expiresAt: number
+}
+
+interface AuthState {
+  user: User | null
   isAuthenticated: boolean
   loading: boolean
   error: string | null
-  resetTokens: { [email: string]: string }
+  resetTokens: { [email: string]: ResetToken }
 }
-
-
 
 interface LoginCredentials {
   email: string
@@ -37,7 +40,6 @@ const initialState: AuthState = {
 
 // Simulated API call for login
 const loginApi = async (credentials: LoginCredentials): Promise<User> => {
-  
   await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
   if (credentials.email === 'user@example.com' && credentials.password === 'password') {
     return { id: '1', name: 'John Doe', email: credentials.email }
@@ -47,16 +49,27 @@ const loginApi = async (credentials: LoginCredentials): Promise<User> => {
 
 // Simulated API call for register
 const registerApi = async (credentials: RegisterCredentials): Promise<User> => {
-  
   await new Promise(resolve => setTimeout(resolve, 1000)) 
   return { id: '2', name: credentials.name, email: credentials.email }
 }
 
+// Simulated API call for password reset request
+const requestResetApi = async (email: string): Promise<ResetToken> => {
+  await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
+  const token = Math.random().toString(36).substr(2, 10)
+  const expiresAt = Date.now() + 3600000 // Token expires in 1 hour
+  return { token, expiresAt }
+}
 
+// Simulated API call for password reset
+const resetPasswordApi = async (token: string, newPassword: string): Promise<void> => {
+  await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
+  console.log(`Password reset with token ${token} to new password: ${newPassword}`)
+}
 
-export const register = createAsyncThunk(
+export const register = createAsyncThunk<User, RegisterCredentials, { rejectValue: string }>(
   'auth/register',
-  async (credentials: RegisterCredentials, { rejectWithValue }) => {
+  async (credentials, { rejectWithValue }) => {
     try {
       const user = await registerApi(credentials)
       localStorage.setItem('authToken', 'dummy-token') 
@@ -67,9 +80,9 @@ export const register = createAsyncThunk(
   }
 )
 
-export const login = createAsyncThunk(
+export const login = createAsyncThunk<User, LoginCredentials, { rejectValue: string }>(
   'auth/login',
-  async (credentials: LoginCredentials, { rejectWithValue }) => {
+  async (credentials, { rejectWithValue }) => {
     try {
       const user = await loginApi(credentials)
       localStorage.setItem('authToken', 'dummy-token') 
@@ -80,38 +93,24 @@ export const login = createAsyncThunk(
   }
 )
 
-// Simulated API call for password reset request
-const requestResetApi = async (email: string): Promise<string> => {
-  await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
-  const token = Math.random().toString(36).substr(2, 10)
-  console.log(`Reset token for ${email}: ${token}`)
-  return token
-}
-
-// Simulated API call for password reset
-const resetPasswordApi = async (token: string, newPassword: string): Promise<void> => {
-  await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API delay
-  console.log(`Password reset with token ${token} to new password: ${newPassword}`)
-}
-
-export const requestReset = createAsyncThunk(
+export const requestReset = createAsyncThunk<{ email: string; resetToken: ResetToken }, string, { rejectValue: string }>(
   'auth/requestReset',
-  async (email: string, { rejectWithValue }) => {
+  async (email, { rejectWithValue }) => {
     try {
-      const token = await requestResetApi(email)
-      return { email, token }
+      const resetToken = await requestResetApi(email)
+      return { email, resetToken }
     } catch (error) {
       return rejectWithValue((error as Error).message)
     }
   }
 )
 
-export const resetPassword = createAsyncThunk(
+export const resetPassword = createAsyncThunk<string, { token: string; newPassword: string }, { state: { auth: AuthState }, rejectValue: string }>(
   'auth/resetPassword',
-  async ({ token, newPassword }: { token: string; newPassword: string }, { getState, rejectWithValue }) => {
+  async ({ token, newPassword }, { getState, rejectWithValue }) => {
     try {
-      const state = getState() as { auth: AuthState }
-      const email = Object.keys(state.auth.resetTokens).find(key => state.auth.resetTokens[key] === token)
+      const state = getState()
+      const email = Object.keys(state.auth.resetTokens).find(key => state.auth.resetTokens[key].token === token)
       if (!email) {
         throw new Error('Invalid or expired token')
       }
@@ -123,9 +122,12 @@ export const resetPassword = createAsyncThunk(
   }
 )
 
-export const logout = createAsyncThunk('auth/logout', async () => {
-  localStorage.removeItem('authToken')
-})
+export const logout = createAsyncThunk<void, void>(
+  'auth/logout', 
+  async () => {
+    localStorage.removeItem('authToken')
+  }
+)
 
 const authSlice = createSlice({
   name: 'auth',
@@ -133,40 +135,49 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-    .addCase(login.pending, (state) => {
-      state.loading = true
-      state.error = null
-    })
-    .addCase(login.fulfilled, (state, action: PayloadAction<User>) => {
-      state.isAuthenticated = true
-      state.user = action.payload
-      state.loading = false
-    })
-    .addCase(login.rejected, (state, action) => {
-      state.loading = false
-      state.error = action.payload as string
-    })
-    .addCase(register.pending, (state) => {
-      state.loading = true
-      state.error = null
-    })
-    .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
-      state.isAuthenticated = true
-      state.user = action.payload
-      state.loading = false
-    })
-    .addCase(register.rejected, (state, action) => {
-      state.loading = false
-      state.error = action.payload as string
-    })
-    .addCase(logout.fulfilled, (state) => {
-      state.isAuthenticated = false
-      state.user = null
+      .addCase(login.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(login.fulfilled, (state, action: PayloadAction<User>) => {
+        state.isAuthenticated = true
+        state.user = action.payload
+        state.loading = false
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload ?? 'An error occurred during login'
+      })
+      .addCase(register.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
+        state.isAuthenticated = true
+        state.user = action.payload
+        state.loading = false
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload ?? 'An error occurred during registration'
+      })
+      .addCase(requestReset.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(requestReset.fulfilled, (state, action: PayloadAction<{ email: string; resetToken: ResetToken }>) => {
+        state.loading = false
+        state.resetTokens[action.payload.email] = action.payload.resetToken
+      })
+      .addCase(requestReset.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload ?? 'An error occurred while requesting password reset'
       })
       .addCase(resetPassword.pending, (state) => {
         state.loading = true
         state.error = null
       })
+      
       .addCase(resetPassword.fulfilled, (state) => {
         state.loading = false
       })
@@ -174,6 +185,10 @@ const authSlice = createSlice({
         state.loading = false
         state.error = action.payload as string
       })
+      .addCase(logout.fulfilled, (state) => {
+        state.isAuthenticated = false
+        state.user = null
+        })
   },
 })
 

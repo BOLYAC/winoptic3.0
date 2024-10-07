@@ -17,7 +17,6 @@ import { useForm } from "react-hook-form"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,7 +25,6 @@ import {
 import { z } from "zod"
 import { RootState, AppDispatch } from "./../../redux/store"
 import { requestReset } from "./../../redux/slices/authSlice"
-
 
 const formSchema = z.object({
   email: z.string().email({
@@ -38,7 +36,7 @@ const RequestResetPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { loading, error, resetTokens } = useSelector((state: RootState) => state.auth)
   const [resetRequested, setResetRequested] = useState(false)
-  const [mockResetLink, setMockResetLink] = useState("")
+  const [resetEmail, setResetEmail] = useState("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,31 +49,42 @@ const RequestResetPage: React.FC = () => {
     try {
       await dispatch(requestReset(values.email)).unwrap()
       setResetRequested(true)
-      const token = resetTokens[values.email]
-      const link = `${window.location.origin}/reset-password/${token}`
-      setMockResetLink(link)
+      setResetEmail(values.email)
     } catch (err) {
       console.error("Password reset request failed:", err)
     }
   }
+
+  const getMockResetLink = (email: string) => {
+    const resetToken = resetTokens[email]
+    if (resetToken) {
+      return `${window.location.origin}/reset-password/${resetToken.token}`
+    }
+    return ""
+  }
+
   if (resetRequested) {
+    const mockResetLink = getMockResetLink(resetEmail)
+
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
         <Card className="w-full max-w-md">
-          <CardHeader className="text-clip text-center">
+          <CardHeader>
             <CardTitle>Check Your Email</CardTitle>
             <CardDescription>We've sent you instructions to reset your password.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-center mb-4">If an account exists for <span className="text-blue-600">{form.getValues().email}</span> , you will receive password reset instructions.</p>
-            <Alert>
-              <AlertTitle>Mock Reset Link (for demonstration only)</AlertTitle>
-              <AlertDescription>
-                <a href={mockResetLink} className="text-blue-600 hover:underline break-all">
-                  {mockResetLink}
-                </a>
-              </AlertDescription>
-            </Alert>
+            <p className="text-center mb-4">If an account exists for {resetEmail}, you will receive password reset instructions.</p>
+            {mockResetLink && (
+              <Alert>
+                <AlertTitle>Mock Reset Link (for demonstration only)</AlertTitle>
+                <AlertDescription>
+                  <a href={mockResetLink} className="text-green-600 hover:underline break-all">
+                    {mockResetLink}
+                  </a>
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
           <CardFooter>
             <Button className="w-full rounded-full" onClick={() => window.location.href = "/login"}>
@@ -88,7 +97,7 @@ const RequestResetPage: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>Reset Your Password</CardTitle>
@@ -127,7 +136,6 @@ const RequestResetPage: React.FC = () => {
               </Button>
             </form>
           </Form>
-         
         </CardContent>
         <CardFooter>
           <p className="text-sm text-center w-full">
