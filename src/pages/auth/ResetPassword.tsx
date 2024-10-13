@@ -117,7 +117,10 @@ const ResetPasswordPage: React.FC = () => {
                   <FormItem>
                     <FormLabel>New Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Enter your new password" {...field} />
+                      <Input type="password" placeholder="Enter your new password" {...field} 
+                      className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100  transition-colors duration-200
+                        ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                     `}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -130,7 +133,10 @@ const ResetPasswordPage: React.FC = () => {
                   <FormItem>
                     <FormLabel>Confirm New Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Confirm your new password" {...field} />
+                      <Input type="password" placeholder="Confirm your new password" {...field} 
+                      className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100  transition-colors duration-200
+                        ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                     `}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

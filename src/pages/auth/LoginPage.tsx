@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="tetx-2xl sm:text-3xl">Welcome</CardTitle>
+            <CardTitle className="tetx-2xl sm:text-3xl">Welcome {user.name}</CardTitle>
             <CardDescription className="text-sm sm:text-base">You are logged in</CardDescription>
           </CardHeader>
           <CardContent>
@@ -84,19 +84,21 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    <div className="flex  min-h-screen ">
       
-        <Card className="w-full max-w-4xl">
-        <div className="flex flex-col md:flex-row ">
-        <div className="hidden md:block md:w-1/2">
+        <div className="hidden lg:block lg:w-3/5 relative">
         <img 
-        src = "./../../../public/unsplash.jpg?width=400&height=600"
+        src = " /unsplash.jpg"
         alt="login Picture"
-        className="w-full h-full object-cover rounded-l-lg"
+        className="w-full h-full object-cover"
         />
+         <div className="absolute bottom-5 left-2 text-white text-sm ">
+         Copyright © 2024 
         </div>
-        <div className="md:w-1/2 p-6 flex flex-col justify-center">
-        <Card className="shadow-none border-0">
+        </div>
+        <div className="w-full lg:w-[30%] p-4 flex flex-auto items-center justify-center">
+        <Card className="w-full max-w-md border-0  shadow-none">
+      
           <CardHeader className="text-center ">
             <CardTitle className="tetx-2xl sm:text-3xl">Login to your account</CardTitle>
             <CardDescription className="text-sm sm:text-base">Good to see you again</CardDescription>
@@ -118,7 +120,12 @@ const LoginPage: React.FC = () => {
                     <FormItem>
                       <FormLabel className="text-sm sm:text-base">Email</FormLabel>
                       <FormControl>
-                        <Input  placeholder="user@example.com" className="text-sm sm:text-base p-2 sm:p-3" {...field} type="email"/>
+                        <Input  
+                        placeholder="user@example.com" 
+                       {...field} type="email"
+                       className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100  transition-colors duration-200
+                         ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                      `}/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -131,14 +138,18 @@ const LoginPage: React.FC = () => {
                     <FormItem>
                       <FormLabel className="text-sm sm:text-base">Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Enter your password" className="text-sm sm:text-base p-2 sm:p-3" {...field} />
+                        <Input type="password" placeholder="Enter your password" {...field} 
+                        className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100 transition-colors duration-200
+                         ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                        `}/>
                       </FormControl>
+                      <FormMessage />    
                       <FormDescription>
                         <a href="/password" className="text-sm sm:text-sm text-gray-500 hover:underline ml-2">
                           Forgot password ?
                         </a>
                       </FormDescription>
-                      <FormMessage />
+                      
                     </FormItem>
                   )}
                 />
@@ -165,8 +176,7 @@ const LoginPage: React.FC = () => {
           </CardFooter>
           </Card>
           </div>
-          </div>
-        </Card>
+         
       </div>
     
   );

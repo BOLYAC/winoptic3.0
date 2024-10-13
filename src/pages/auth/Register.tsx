@@ -92,7 +92,7 @@ const Register : React.FC = () => {
           <CardContent>
             <p className="text-center mb-4">You can now log in with your new account</p>
             <Button className="w-full rounded-full" onClick={() => window.location.href = "/login"}>
-              Go to Login
+              Go to Dashboard
             </Button>
           </CardContent>
         </Card>
@@ -101,18 +101,21 @@ const Register : React.FC = () => {
   }
 
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-      <Card className="w-full max-w-4xl">
-        <div className="flex flex-col md:flex-row">
-          <div className="hidden md:block md:w-1/2">
-            <img 
-              src="./../../../public/unsplash.jpg?width=400&height=600"
-              alt="register"
-              className="w-full h-full object-cover rounded-l-lg"
-            />
-          </div>
-          <div className="md:w-1/2 p-6 flex flex-col justify-center">
-            <Card className="shadow-none border-0">
+      <div className="flex  min-h-screen ">
+      
+      <div className="hidden lg:block lg:w-3/5 relative">
+      <img 
+      src = " /unsplash.jpg"
+      alt="login Picture"
+      className="w-full h-full object-cover"
+      />
+       <div className="absolute bottom-5 left-2 text-white text-sm ">
+       Copyright © 2024 
+      </div>
+      </div>
+      <div className="w-full lg:w-[30%] p-4 flex flex-auto items-center justify-center">
+      <Card className="w-full max-w-md border-0  shadow-none">
+    
       <CardHeader className="text-center">
         <CardTitle className="tetx-2xl sm:text-3xl">Create an account</CardTitle>
         <CardDescription className="text-sm sm:text-base">Sign up to get started</CardDescription>
@@ -136,7 +139,10 @@ const Register : React.FC = () => {
                 <FormItem >
                   <FormLabel className="text-sm "> User name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your name" {...field} className="text-sm sm:text-base p-2 sm:p-3" />
+                    <Input placeholder="Enter your name" {...field} 
+                    className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100 transition-colors duration-200
+                      ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                     `}/> 
                   </FormControl>
                    <FormMessage />
                 </FormItem>
@@ -150,7 +156,10 @@ const Register : React.FC = () => {
                 <FormItem >
                   <FormLabel className="text-sm "> Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="user@example.com" {...field} className="text-sm sm:text-base p-2 sm:p-3"/>
+                    <Input type="email" placeholder="user@example.com" {...field} 
+                    className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100 transition-colors duration-200
+                      ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                     `}/>
                   </FormControl>
                    <FormMessage />
                 </FormItem>
@@ -164,7 +173,10 @@ const Register : React.FC = () => {
                 <FormItem >
                   <FormLabel className="text-sm "> Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Enter your password" {...field} className="text-sm sm:text-base p-2 sm:p-3"/>
+                    <Input type="password" placeholder="Enter your password" {...field} 
+                    className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100 transition-colors duration-200
+                         ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                        `}/>
                   </FormControl>
                  <FormMessage />
                 </FormItem>
@@ -178,7 +190,10 @@ const Register : React.FC = () => {
                 <FormItem >
                   <FormLabel className="text-sm">Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Confirm your password" {...field} className="text-sm sm:text-base p-2 sm:p-3"/>
+                    <Input type="password" placeholder="Confirm your password" {...field} 
+                    className={`text-sm sm:text-base p-2 sm:p-3 hover:bg-blue-100 transition-colors duration-200
+                      ${field.name in form.formState.errors ? 'bg-red-200' : ''}
+                     `}/>
                   </FormControl>
                  <FormMessage />
                 </FormItem>
@@ -192,23 +207,22 @@ const Register : React.FC = () => {
                         </>
                       ) : "Create an account"}
               </Button>
-            
+              <p className="text-center text-sm text-gray-600">By clicking continue, you agree to our <a className="hover:underline">Terms of Service </a>and <a className="hover:underline">Privacy Policy</a>.</p>
+        
           </form>
-          
+         
         </Form>
-        <p className="text-center text-sm text- text-gray-600">By clicking continue, you agree to our <a className="hover:underline">Terms of Service </a>and <a className="hover:underline">Privacy Policy</a>.</p>
         
       </CardContent>
       <CardFooter  className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
           <p className=" text-md text-center w-full ">
-            Already have an account? <a href="/login" className="text-blue-600 hover:underline">Log in</a>
+            Already have an account? <a href="/login" className="text-blue-600 hover:underline">Sign in</a>
           </p>
       </CardFooter>
     </Card>
     </div>
     </div>
-    </Card>
-    </div>
+    
     );
 };
 
